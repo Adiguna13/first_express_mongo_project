@@ -17,6 +17,8 @@ mongoose
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+//express mengambil data yang dirimkan melalui body request
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("Hello World");
@@ -29,6 +31,13 @@ app.get("/products", async (req, res) => {
 
 app.get("/products/create", (req, res) => {
   res.render("products/create");
+});
+
+app.post("/products", async (req, res) => {
+  const product = new Product(req.body);
+  await product.save();
+  // res.redirect("/products");
+  res.redirect(`/products/${product._id}`);
 });
 
 app.get("/products/:id", async (req, res) => {
