@@ -3,6 +3,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 
+/** Models */
+const Product = require("./models/product");
+
 mongoose
   .connect("mongodb://127.0.0.1:27017/shop_db")
   .then(() => {
