@@ -16,8 +16,11 @@
     }
   </script> -->
   <body>
-    <h1>Products List</h1>
+    <h1><%= category %> Products</h1>
     <a href="/products/create">Add Product</a>
+    <% if(category !== 'All') { %>
+    <a href="/products">All Products</a>
+    <% } %>
     <ul>
       <% for (let product of products) { %>
       <li>
