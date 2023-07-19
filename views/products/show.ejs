@@ -7,13 +7,14 @@
   </head>
   <body>
     <h1>Detail Product</h1>
-    <h2><%= products.name %></h2>
+    <h2><%= product.name %></h2>
     <ul>
-      <li>Brand: <%= products.brand %></li>
-      <li>Color: <%= products.color %></li>
-      <li>Price: <%= products.price %></li>
-      <li>Category: <%= products.category %></li>
+      <li>Brand: <%= product.brand %></li>
+      <li>Color: <%= product.color %></li>
+      <li>Price: <%= product.price %></li>
+      <li>Category: <%= product.category %></li>
     </ul>
     <a href="/products">All Products</a>
+    <a href="/products/<%= product._id %>/edit">Edit</a>
   </body>
 </html>
