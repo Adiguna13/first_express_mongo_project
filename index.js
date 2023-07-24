@@ -100,12 +100,15 @@ app.delete(
   })
 );
 
+const validatorHandler = (err) => {
+  err.status = 400;
+  err.message = Object.values(err.errors).map((item) => item.message);
+  return new ErrorHandler(err.message, err.status);
+};
+
 app.use((err, req, res, next) => {
   console.dir(err);
-  if (err.name === "ValidationError") {
-    err.status = 400;
-    err.message = Object.values(err.errors).map((item) => item.message);
-  }
+  if (err.name === "ValidationError") err = validatorHandler(err);
   if (err.name === "CastError") {
     err.status = 404;
     err.message = "Product Not Found";
