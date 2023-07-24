@@ -25,6 +25,12 @@ app.use(express.urlencoded({ extended: true }));
 //override atau menggantikan method pada form
 app.use(methodOverride("_method"));
 
+function wrapAsync(fn) {
+  return function (req, res, next) {
+    fn(req, res, next).catch((err) => next(err));
+  };
+}
+
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
@@ -52,50 +58,43 @@ app.post("/products", async (req, res) => {
   res.redirect(`/products/${product._id}`);
 });
 
-app.get("/products/:id", async (req, res, next) => {
-  try {
+app.get(
+  "/products/:id",
+  wrapAsync(async (req, res, next) => {
     const { id } = req.params;
     const product = await Product.findById(id);
     res.render("products/show", { product });
-  } catch (error) {
-    next(new ErrorHandler("Product Not Found", 404));
-  }
-});
+  })
+);
 
-app.get("/products/:id/edit", async (req, res, next) => {
-  try {
+app.get(
+  "/products/:id/edit",
+  wrapAsync(async (req, res) => {
     const { id } = req.params;
     const product = await Product.findById(id);
     res.render("products/edit", { product });
-  } catch (error) {
-    next(new ErrorHandler());
-  }
-});
+  })
+);
 
-app.put("/products/:id", async (req, res) => {
-  try {
+app.put(
+  "/products/:id",
+  wrapAsync(async (req, res) => {
     const { id } = req.params;
     const product = await Product.findByIdAndUpdate(id, req.body, {
       runValidator: true,
     });
     res.redirect(`/products/${product._id}`);
-  } catch (err) {
-    next(new ErrorHandler("", 404));
-  }
-});
+  })
+);
 
-app.delete("/products/:id", async (req, res) => {
-  const { id } = req.params;
-  const product = await Product.findByIdAndDelete(id)
-    .then(() => {
-      res.redirect(`/products`);
-      // const alertMessage = `deleted`;
-      // res.redirect(`/products?alert=${encodeURIComponent(alertMessage)}`);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
+app.delete(
+  "/products/:id",
+  wrapAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const product = await Product.findByIdAndDelete(id);
+    res.redirect(`/products`);
+  })
+);
 
 app.use((err, req, res, next) => {
   const { status = 500, message = "Something went wrong" } = err;
