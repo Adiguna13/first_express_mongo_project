@@ -46,21 +46,25 @@ app.get("/products", async (req, res) => {
   }
 });
 
-app.get("/products/create", (req, res) => {
-  // throw new ErrorHandler("Custom Error", 503);
-  res.render("products/create");
-});
+app.get(
+  "/products/create",
+  wrapAsync((req, res) => {
+    res.render("products/create");
+  })
+);
 
-app.post("/products", async (req, res) => {
-  const product = new Product(req.body);
-  await product.save();
-  // res.redirect("/products");
-  res.redirect(`/products/${product._id}`);
-});
+app.post(
+  "/products",
+  wrapAsync(async (req, res) => {
+    const product = new Product(req.body);
+    await product.save();
+    res.redirect(`/products/${product._id}`);
+  })
+);
 
 app.get(
   "/products/:id",
-  wrapAsync(async (req, res, next) => {
+  wrapAsync(async (req, res) => {
     const { id } = req.params;
     const product = await Product.findById(id);
     res.render("products/show", { product });
@@ -95,6 +99,19 @@ app.delete(
     res.redirect(`/products`);
   })
 );
+
+app.use((err, req, res, next) => {
+  console.dir(err);
+  if (err.name === "ValidationError") {
+    err.status = 400;
+    err.message = Object.values(err.errors).map((item) => item.message);
+  }
+  if (err.name === "CastError") {
+    err.status = 404;
+    err.message = "Product Not Found";
+  }
+  next(err);
+});
 
 app.use((err, req, res, next) => {
   const { status = 500, message = "Something went wrong" } = err;
