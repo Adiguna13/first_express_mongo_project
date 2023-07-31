@@ -81,6 +81,7 @@ app.post(
     console.log(product);
     console.log(garment_id);
     garment.products.push(product);
+    product.garment = garment;
     await garment.save();
     await product.save();
     console.log(garment);

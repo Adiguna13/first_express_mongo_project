@@ -19,8 +19,16 @@
         </a>
       </li>
     </ul>
-    <a href="/products">All Products</a>s
+    <div>
+      <p>
+        Garment =
+        <a href="/garments/<%= product.garment._id %>"
+          ><%= product.garment.name %></a
+        >
+      </p>
+    </div>
 
+    <a href="/products">All Products</a>
     <a href="/products/<%= product._id %>/edit">Edit</a>
     <form action="/products/<%= product._id %>?_method=DELETE" method="post">
       <button type="submit">Delete</button>
