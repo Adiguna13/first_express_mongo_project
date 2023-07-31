@@ -67,6 +67,27 @@ app.get(
   })
 );
 
+app.get("/garments/:garment_id/product/create", (req, res) => {
+  const { garment_id } = req.params;
+  res.render("products/create", { garment_id });
+});
+
+app.post(
+  "/garments/:garment_id/product",
+  wrapAsync(async (req, res) => {
+    const { garment_id } = req.params;
+    const garment = await Garment.findById(garment_id);
+    const product = new Product(req.body);
+    console.log(product);
+    console.log(garment_id);
+    garment.products.push(product);
+    await garment.save();
+    await product.save();
+    console.log(garment);
+    res.redirect(`/garments/${garment_id}`);
+  })
+);
+
 app.get("/products", async (req, res) => {
   const { category } = req.query;
   if (category) {
