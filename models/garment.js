@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Product = require("./product");
 
 const garmentSchema = new mongoose.Schema({
   name: {
@@ -18,6 +19,13 @@ const garmentSchema = new mongoose.Schema({
       ref: "Product",
     },
   ],
+});
+
+garmentSchema.post("findOneAndDelete", async function (garment) {
+  if (garment.products.length) {
+    const res = await Product.deleteMany({ _id: { $in: garment.products } });
+    console.log(res);
+  }
 });
 
 const Garment = mongoose.model("Garment", garmentSchema);
